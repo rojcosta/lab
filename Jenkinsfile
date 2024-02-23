@@ -1,4 +1,4 @@
-def node_name = "kubernetes"
+def node_name = "jenkins-jenkins-agent"
 
 pipeline {
     agent {
