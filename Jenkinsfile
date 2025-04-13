@@ -1,9 +1,5 @@
-def node_name = "jenkins-jenkins-agent"
-
 pipeline {
-    agent {
-        label "${node_name}"
-    }
+    agent any
     options {
         disableConcurrentBuilds()
         parallelsAlwaysFailFast()
@@ -15,21 +11,19 @@ pipeline {
     stages {
         stage("Stage 01") { steps { script {
             sh """
-                id
-                pwd
-                ls
+                docker build --no-cache -t lab .
             """
         } } }
     }
-     post {
-        // Clean after build
-        always {
-            cleanWs(cleanWhenNotBuilt: false,
-                    deleteDirs: true,
-                    disableDeferredWipeout: true,
-                    notFailBuild: true,
-                    patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
-                               [pattern: '.propsfile', type: 'EXCLUDE']])
-        }
-    }
+    //post {
+    //    // Clean after build
+    //    always {
+    //        cleanWs(cleanWhenNotBuilt: false,
+    //                deleteDirs: true,
+    //                disableDeferredWipeout: true,
+    //                notFailBuild: true,
+    //                patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
+    //                           [pattern: '.propsfile', type: 'EXCLUDE']])
+    //    }
+    //}
 }
