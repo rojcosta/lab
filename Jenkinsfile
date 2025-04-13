@@ -1,5 +1,9 @@
+def node_name = "build"
+
 pipeline {
-    agent any
+    agent {
+        label "${node_name}"
+    }
     options {
         disableConcurrentBuilds()
         parallelsAlwaysFailFast()
@@ -11,7 +15,7 @@ pipeline {
     stages {
         stage("Stage 01") { steps { script {
             sh """
-                docker build --no-cache -t lab .
+                podman build --no-cache -t lab .
             """
         } } }
     }
