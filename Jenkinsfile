@@ -13,9 +13,39 @@ pipeline {
     //    pollSCM('') // Enabling being build on Push
     //}
     stages {
-        stage("Stage 01") { steps { script {
+        stage("Build") { steps { script {
+
+            def repoUrl = env.GIT_URL
+            def repoName = repoUrl.split('/')[-1].replace('.git', '')
+            def branchName = env.BRANCH_NAME
+            def ingressSuffix = branchName.split('/')[-1]
+            def buildId = env.BUILD_ID
+            echo "Branch Name: ${branchName}"
+            echo "Repository Name: ${repoName}"
+            echo "IngressSuffix Name: ${ingressSuffix}"
             sh """
-                podman build --no-cache -t lab .
+                podman build --no-cache -t ${repoName}-${ingressSuffix}-${buildId} .
+            """
+        } } }
+        stage("Deploy") { steps { script {
+            def repoUrl = env.GIT_URL
+            def repoName = repoUrl.split('/')[-1].replace('.git', '')
+            def branchName = env.BRANCH_NAME
+            def ingressSuffix = branchName.split('/')[-1]
+            def buildId = env.BUILD_ID
+            sh """#/bin/bash
+                export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+                kubectl get pods -n defautl
+                sed -i "s/image-replace/${repoName}-${ingressSuffix}-${buildId}/g" dev/deployment.yaml
+                cat dev/deployment.yaml
+                kubectl create ns ${repoName}-${ingressSuffix}
+                kubectl -n ${repoName}-${ingressSuffix} apply -f dev/deployment.yaml
+                sleep 10
+                kubectl -n ${repoName}-${ingressSuffix} get pods
+                git status
+                git checkout .
+                git reset --hard
+                git status
             """
         } } }
     }
