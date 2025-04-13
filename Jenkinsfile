@@ -24,7 +24,16 @@ pipeline {
             echo "Repository Name: ${repoName}"
             echo "IngressSuffix Name: ${ingressSuffix}"
             sh """
-                podman build --no-cache -t ${repoName}-${ingressSuffix}-${buildId} .
+                podman system prune -af --volumes
+                podman build --no-cache -t ${repoName}-${ingressSuffix}:${buildId} .
+                podman image ls
+            """
+        } } }
+        stage("teste") { steps { script {
+            sh """#!/bin/bash
+                podman image ls
+                export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+                podman image ls
             """
         } } }
         stage("Deploy") { steps { script {
@@ -36,9 +45,9 @@ pipeline {
             sh """#/bin/bash
                 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
                 kubectl get pods -n defautl
-                sed -i "s/image-replace/${repoName}-${ingressSuffix}-${buildId}/g" dev/deployment.yaml
+                sed -i "s/image-replace/${repoName}-${ingressSuffix}:${buildId}/g" dev/deployment.yaml
                 cat dev/deployment.yaml
-                kubectl create ns ${repoName}-${ingressSuffix}
+                kubectl create ns ${repoName}-${ingressSuffix} || true
                 kubectl -n ${repoName}-${ingressSuffix} apply -f dev/deployment.yaml
                 sleep 10
                 kubectl -n ${repoName}-${ingressSuffix} get pods
