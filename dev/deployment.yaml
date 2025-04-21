@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: rojcosta/lab-teste-dev
+        image: rojcosta/lab-teste-dev:1
         #image: image-replace
         imagePullPolicy: IfNotPresent
         ports:
