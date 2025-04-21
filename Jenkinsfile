@@ -51,7 +51,7 @@ pipeline {
                 kubectl create ns ${repoName}-${ingressSuffix} || true
                 kubectl -n ${repoName}-${ingressSuffix} apply -f dev/deployment.yaml
                 sleep 10
-                kubectl -n ${repoName}-${ingressSuffix} rollout restartt deployment/app
+                kubectl -n ${repoName}-${ingressSuffix} rollout restart deployment/app
                 kubectl -n ${repoName}-${ingressSuffix} rollout status deployment/app
                 kubectl -n ${repoName}-${ingressSuffix} get pods
                 kubectl -n ${repoName}-${ingressSuffix} get ingress
