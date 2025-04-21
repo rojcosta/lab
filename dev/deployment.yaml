@@ -33,7 +33,8 @@ spec:
     spec:
       containers:
       - name: app
-        image: image-replace
+        image: rojcosta/lab-teste-dev
+        #image: image-replace
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
