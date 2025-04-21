@@ -46,6 +46,7 @@ pipeline {
                 export KUBECONFIG=/home/rojcosta/k3s.yaml
                 kubectl get pods -n defautl
                 sed -i "s/image-replace/${repoName}-${ingressSuffix}:${buildId}/g" dev/deployment.yaml
+                sed -i "s/ingress-replace/${repoName}-${ingressSuffix}/g" dev/deployment.yaml
                 cat dev/deployment.yaml
                 kubectl create ns ${repoName}-${ingressSuffix} || true
                 kubectl -n ${repoName}-${ingressSuffix} apply -f dev/deployment.yaml
