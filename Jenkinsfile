@@ -24,16 +24,16 @@ pipeline {
             echo "Repository Name: ${repoName}"
             echo "IngressSuffix Name: ${ingressSuffix}"
             sh """
-                podman system prune -af --volumes
-                podman build --no-cache -t ${repoName}-${ingressSuffix}:${buildId} .
-                podman image ls
+                docker system prune -af --volumes
+                docker build --no-cache -t ${repoName}-${ingressSuffix}:${buildId} .
+                docker image ls
             """
         } } }
         stage("teste") { steps { script {
             sh """#!/bin/bash
-                podman image ls
-                export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-                podman image ls
+                docker image ls
+                export KUBECONFIG=/home/rojcosta/k3s.yaml
+                docker image ls
             """
         } } }
         stage("Deploy") { steps { script {
@@ -43,7 +43,7 @@ pipeline {
             def ingressSuffix = branchName.split('/')[-1]
             def buildId = env.BUILD_ID
             sh """#/bin/bash
-                export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+                export KUBECONFIG=/home/rojcosta/k3s.yaml
                 kubectl get pods -n defautl
                 sed -i "s/image-replace/${repoName}-${ingressSuffix}:${buildId}/g" dev/deployment.yaml
                 cat dev/deployment.yaml
